@@ -53,18 +53,29 @@ npm run sync:bridge
 
 脚本（`scripts/sync-bridge.js`）做的事：
 
-1. `git clone --depth 1 https://github.com/soolary/h5-cc-bridge.git deps/h5-cc-bridge`（或 fetch + reset --hard origin/main）
-2. 把 `deps/h5-cc-bridge/src/` 复制到 `assets/script/bridge/`
-3. 写一个标记文件 `assets/script/bridge/.SYNCED_FROM`，记录 commit SHA
+1. 首次：`git clone --depth 1 -b $BRIDGE_REF https://github.com/soolary/h5-cc-bridge.git deps/h5-cc-bridge`
+2. 已存在：`git fetch --all --tags` + `git reset --hard origin/$BRIDGE_REF`
+3. 把 `deps/h5-cc-bridge/src/*.ts` 复制到 `assets/script/bridge/`
+4. 写 `assets/script/bridge/.SYNCED_FROM`，记录 commit SHA / ref / 时间
 
-之后 `H5MsgMgr.ts` 改成：
+git 处理：
+
+- `deps/h5-cc-bridge/`：**gitignore**，是工作区克隆，跟 `deps/h5-game` 同性质。
+- `assets/script/bridge/*.ts`：**进 git**，Cocos Creator 编辑期必须存在。视为 sync 产物，不要手动改。
+
+之后 `H5MsgMgr.ts` 改成（已落地）：
 
 ```ts
 import {
-  BRIDGE_ACTION,
-  type CocosToH5PayloadMap,
-  type H5ToCocosPayloadMap,
-} from './bridge'
+  CocosToH5PayloadMap as SharedCocosToH5PayloadMap,
+  H5ToCocosPayloadMap,
+  H5NavigatePayload,
+} from './bridge';
+
+// CC 侧 sendToH5 接受原始字节，本地覆盖一下 wsSend。
+export interface CocosToH5PayloadMap extends Omit<SharedCocosToH5PayloadMap, 'wsSend'> {
+  wsSend: Uint8Array | ArrayBuffer;
+}
 ```
 
 ## 版本固定
