@@ -92,4 +92,6 @@ npm install
 npm run build       # tsc → dist/{index.js,index.d.ts,...}
 ```
 
-`dist/` 已随源码 commit，消费方 `npm install` 后无需再编译；本地修改 `src/*.ts` 后记得跑 `npm run build` 并 commit。
+`dist/` 已随源码 commit，消费方 `npm install` 后无需再编译；本地修改 `src/*.ts` 后**必须**跑 `npm run build` 并 commit `dist/`，否则 git-hosted 依赖拉到的还是旧产物。
+
+注意：本仓库**故意没有 `prepare` script**。pnpm 在 git-hosted 依赖含 `prepare` 时会拒绝执行，除非加 `onlyBuiltDependencies` 白名单（见 [pnpm 文档](https://pnpm.io/package_json#pnpmonlybuiltdependencies)）。直接 commit `dist/` 让消费方零脚本就能用，更省心。
