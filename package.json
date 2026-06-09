@@ -1,0 +1,31 @@
+{
+  "name": "h5-cc-bridge",
+  "version": "0.1.0",
+  "description": "H5 <-> Cocos bridge 协议 / 类型 / 信封解析 单一来源（h5-game + h5-cc-game 共用）",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "rebuild": "npm run clean && npm run build",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soolary/h5-cc-bridge.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "cocos",
+    "h5",
+    "bridge",
+    "protocol"
+  ]
+}

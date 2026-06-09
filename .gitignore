@@ -1,0 +1,7 @@
+node_modules
+.DS_Store
+*.log
+
+# 注意：dist/ 必须随源码一起 commit。
+# h5-game 通过 git URL 直接 npm install，没有 prepare 钩子触发实际编译时就拿不到产物。
+# 不要把 dist/ 加进 .gitignore。
