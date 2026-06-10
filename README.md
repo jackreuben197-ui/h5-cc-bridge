@@ -8,11 +8,28 @@ H5 ↔ Cocos 桥接的**协议单一来源**。约束 h5-game (Vue/Vite) 与 h5-
 
 只装协议层：
 
-- `BRIDGE_ACTION` / `BRIDGE_MSG_TYPE` 常量
+- `BRIDGE_ACTION` / `CC_TO_H5_ACTIONS` / `H5_TO_CC_ACTIONS` / `BRIDGE_MSG_TYPE` 常量
 - Cocos → H5 / H5 → Cocos 的 payload 接口与 PayloadMap
 - `BridgeMessage` 信封 + `createBridgeMessage` / `toBridgeRaw` / `parseBridgeRaw` / `parseBridgeObject`
 
 不装传输层（postMessage / webkit / scheme）和业务 channel，那些与各项目自己的 logger / store 强耦合，留在消费方。
+
+## 入口（subpath exports）
+
+每一侧只 import 自己关心的方向：
+
+| 入口 | 适用方 | 包含 |
+|------|--------|------|
+| `h5-cc-bridge/cc-side` | Cocos 项目 | 全部 action 常量 + CC→H5 / H5→CC payload 类型。**不含 envelope 运行时**（CC 历史上自实现 BridgeRawMessage） |
+| `h5-cc-bridge/h5-side` | H5 (Vue/Vite) | `cc-side` 全套 + `createBridgeMessage` / `parseBridgeRaw` / `toBridgeRaw` / `parseBridgeObject` 等 envelope 函数 |
+| `h5-cc-bridge/envelope` | 任意一方需单独引入 envelope | 仅 `createBridgeMessage` / `parseBridgeRaw` / ... |
+| `h5-cc-bridge`（默认） | 老调用点兼容 | 全部内容；新代码请改用 `/cc-side` 或 `/h5-side` |
+
+action 常量上也分了组：
+
+- `CC_TO_H5_ACTIONS` — CC 发的（`wsConnect` / `showToast` / `h5Navigate` / ...）
+- `H5_TO_CC_ACTIONS` — H5 发的（`wsOpen` / `syncUser` / `enterTable` / ...）
+- `BRIDGE_ACTION` — 上面两组的合并视图（兼容存量调用点）
 
 ## 两端消费方式
 
@@ -32,7 +49,7 @@ H5 ↔ Cocos 桥接的**协议单一来源**。约束 h5-game (Vue/Vite) 与 h5-
 // 伪代码
 resolve.alias['@bridge-protocol'] =
   env.VITE_BRIDGE_TARGET === 'h5-cc-game'
-    ? 'h5-cc-bridge'                           // 用共享协议
+    ? 'h5-cc-bridge/h5-side'                   // 用共享协议（H5 侧入口）
     : path.resolve(__dirname, 'src/bridge/protocol')  // 老 protocol（兼容 pokerqueen）
 ```
 
@@ -42,9 +59,9 @@ resolve.alias['@bridge-protocol'] =
 import { BRIDGE_ACTION, BRIDGE_MSG_TYPE, type BridgeMessage } from '@bridge-protocol'
 ```
 
-### h5-cc-game（同步 .ts 源码）
+### h5-cc-game（同步 cc-side 源码）
 
-Cocos Creator 2.4 对 npm `node_modules` 的解析很挫，所以不走 npm install，而是用同步脚本把本仓库的 `src/` 直接拷到 `assets/script/bridge/`，让 Cocos 自己的 TS 编译器走相对路径解析。
+Cocos Creator 2.4 对 npm `node_modules` 的解析很挫，所以不走 npm install，而是用同步脚本把本仓库 `cc-side` 入口涉及的源码拷到 `assets/script/bridge/`，让 Cocos 自己的 TS 编译器走相对路径解析。
 
 ```bash
 # h5-cc-game 仓库内
@@ -55,7 +72,7 @@ npm run sync:bridge
 
 1. 首次：`git clone --depth 1 -b $BRIDGE_REF https://github.com/soolary/h5-cc-bridge.git deps/h5-cc-bridge`
 2. 已存在：`git fetch --all --tags` + `git reset --hard origin/$BRIDGE_REF`
-3. 把 `deps/h5-cc-bridge/src/*.ts` 复制到 `assets/script/bridge/`
+3. 把 `deps/h5-cc-bridge/src/{actions,cocosToH5,h5ToCocos,cc-side}.ts` 复制到 `assets/script/bridge/`。**不再同步 `message.ts` / `h5-side.ts` / `index.ts`**，CC 端不需要 envelope 运行时。
 4. 写 `assets/script/bridge/.SYNCED_FROM`，记录 commit SHA / ref / 时间
 
 git 处理：
@@ -63,14 +80,14 @@ git 处理：
 - `deps/h5-cc-bridge/`：**gitignore**，是工作区克隆，跟 `deps/h5-game` 同性质。
 - `assets/script/bridge/*.ts`：**进 git**，Cocos Creator 编辑期必须存在。视为 sync 产物，不要手动改。
 
-之后 `H5MsgMgr.ts` 改成（已落地）：
+之后 `H5MsgMgr.ts` 从 `cc-side` 入口拿类型：
 
 ```ts
 import {
   CocosToH5PayloadMap as SharedCocosToH5PayloadMap,
   H5ToCocosPayloadMap,
   H5NavigatePayload,
-} from './bridge';
+} from './bridge/cc-side';
 
 // CC 侧 sendToH5 接受原始字节，本地覆盖一下 wsSend。
 export interface CocosToH5PayloadMap extends Omit<SharedCocosToH5PayloadMap, 'wsSend'> {

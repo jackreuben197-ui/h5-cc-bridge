@@ -1,9 +1,27 @@
 {
-  "name": "h5-cc-bridge",
+  "name": "@silenthill/h5-cc-bridge",
   "version": "0.1.0",
   "description": "H5 <-> Cocos bridge 协议 / 类型 / 信封解析 单一来源（h5-game + h5-cc-game 共用）",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./cc-side": {
+      "types": "./dist/cc-side.d.ts",
+      "default": "./dist/cc-side.js"
+    },
+    "./h5-side": {
+      "types": "./dist/h5-side.d.ts",
+      "default": "./dist/h5-side.js"
+    },
+    "./envelope": {
+      "types": "./dist/message.d.ts",
+      "default": "./dist/message.js"
+    }
+  },
   "files": [
     "dist",
     "src"
