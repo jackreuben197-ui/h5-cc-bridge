@@ -59,35 +59,39 @@ resolve.alias['@bridge-protocol'] =
 import { BRIDGE_ACTION, BRIDGE_MSG_TYPE, type BridgeMessage } from '@bridge-protocol'
 ```
 
-### h5-cc-game（同步 cc-side 源码）
+### h5-cc-game（npm 依赖 + tsconfig paths）
 
-Cocos Creator 2.4 对 npm `node_modules` 的解析很挫，所以不走 npm install，而是用同步脚本把本仓库 `cc-side` 入口涉及的源码拷到 `assets/script/bridge/`，让 Cocos 自己的 TS 编译器走相对路径解析。
+直接当 npm 包装，靠 `tsconfig.paths` 让 TSC 解析到 `node_modules/h5-cc-bridge/dist/cc-side.d.ts` 拿类型。CC 端只 import 类型，TS 编译后 import 被擦除，运行时不依赖该模块——所以 Cocos Creator 2.4 "不解析 node_modules" 这条限制不会触发。
 
-```bash
-# h5-cc-game 仓库内
-npm run sync:bridge
+```jsonc
+// h5-cc-game/package.json
+{
+  "dependencies": {
+    "h5-cc-bridge": "git+ssh://git@github.com:soolary/h5-cc-bridge.git#main"
+  }
+}
 ```
 
-脚本（`scripts/sync-bridge.js`）做的事：
-
-1. 首次：`git clone --depth 1 -b $BRIDGE_REF https://github.com/soolary/h5-cc-bridge.git deps/h5-cc-bridge`
-2. 已存在：`git fetch --all --tags` + `git reset --hard origin/$BRIDGE_REF`
-3. 把 `deps/h5-cc-bridge/src/{actions,cocosToH5,h5ToCocos,cc-side}.ts` 复制到 `assets/script/bridge/`。**不再同步 `message.ts` / `h5-side.ts` / `index.ts`**，CC 端不需要 envelope 运行时。
-4. 写 `assets/script/bridge/.SYNCED_FROM`，记录 commit SHA / ref / 时间
-
-git 处理：
-
-- `deps/h5-cc-bridge/`：**gitignore**，是工作区克隆，跟 `deps/h5-game` 同性质。
-- `assets/script/bridge/*.ts`：**进 git**，Cocos Creator 编辑期必须存在。视为 sync 产物，不要手动改。
-
-之后 `H5MsgMgr.ts` 从 `cc-side` 入口拿类型：
+```jsonc
+// h5-cc-game/tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "h5-cc-bridge": ["./node_modules/h5-cc-bridge/dist/index"],
+      "h5-cc-bridge/*": ["./node_modules/h5-cc-bridge/dist/*"]
+    }
+  }
+}
+```
 
 ```ts
-import {
+// h5-cc-game/assets/script/H5MsgMgr.ts
+import type {
   CocosToH5PayloadMap as SharedCocosToH5PayloadMap,
   H5ToCocosPayloadMap,
   H5NavigatePayload,
-} from './bridge/cc-side';
+} from 'h5-cc-bridge/cc-side';
 
 // CC 侧 sendToH5 接受原始字节，本地覆盖一下 wsSend。
 export interface CocosToH5PayloadMap extends Omit<SharedCocosToH5PayloadMap, 'wsSend'> {
@@ -95,12 +99,16 @@ export interface CocosToH5PayloadMap extends Omit<SharedCocosToH5PayloadMap, 'ws
 }
 ```
 
+**硬性约束**：CC 端**不能** import bridge 的 runtime 值（`BRIDGE_ACTION.X` 常量、`createBridgeMessage` 等函数）。一旦碰了，那条 import 不会被擦除，Cocos 运行时会找不到 `h5-cc-bridge` 模块崩溃。CC 端发消息全部用字符串字面量（`'wsConnect'` 而不是 `BRIDGE_ACTION.WS_CONNECT`），保持类型纯依赖。
+
+如果哪天 CC 端确实需要共用 envelope，再退回到"sync 源码 + UMD 注入"那一套即可，本仓库的 `cc-side` / `h5-side` 入口仍然可用。
+
 ## 版本固定
 
 - 本地开发：两边都 follow `#main`
 - 上线发布：tag 切到 `git+https://...#v0.1.0`，commit SHA 同样可用
 
-每次 breaking change（删字段 / 改名）发新 tag 并同步两端的 `package.json` / `sync:bridge` 锁定 ref。
+每次 breaking change（删字段 / 改名）发新 tag 并同步两端 `package.json` 锁定 ref。
 
 ## 本地构建
 
