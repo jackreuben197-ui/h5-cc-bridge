@@ -1,0 +1,4 @@
+{
+  "main": "../dist/h5-side.js",
+  "types": "../dist/h5-side.d.ts"
+}

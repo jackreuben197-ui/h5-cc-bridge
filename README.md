@@ -59,28 +59,15 @@ resolve.alias['@bridge-protocol'] =
 import { BRIDGE_ACTION, BRIDGE_MSG_TYPE, type BridgeMessage } from '@bridge-protocol'
 ```
 
-### h5-cc-game（npm 依赖 + tsconfig paths）
+### h5-cc-game（纯 npm 依赖，零配置）
 
-直接当 npm 包装，靠 `tsconfig.paths` 让 TSC 解析到 `node_modules/@silenthill/h5-cc-bridge/dist/cc-side.d.ts` 拿类型。CC 端只 import 类型，TS 编译后 import 被擦除，运行时不依赖该模块——所以 Cocos Creator 2.4 "不解析 node_modules" 这条限制不会触发。
+直接当 npm 包装，**不用配 `tsconfig.paths`、不用 `baseUrl`、不用 sync 脚本**。本仓库根目录提供了 `cc-side/` / `h5-side/` / `envelope/` 三个**子目录代理 `package.json`**（每个 `package.json` 把 `main`/`types` 指回 `../dist/...`），任何 moduleResolution（含 Cocos Creator 默认的 classic node）都能直接解析到 `.d.ts`。
 
 ```jsonc
 // h5-cc-game/package.json
 {
   "dependencies": {
     "@silenthill/h5-cc-bridge": "git+ssh://git@github.com:soolary/h5-cc-bridge.git#main"
-  }
-}
-```
-
-```jsonc
-// h5-cc-game/tsconfig.json
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@silenthill/h5-cc-bridge": ["./node_modules/@silenthill/h5-cc-bridge/dist/index"],
-      "@silenthill/h5-cc-bridge/*": ["./node_modules/@silenthill/h5-cc-bridge/dist/*"]
-    }
   }
 }
 ```
@@ -98,6 +85,8 @@ export interface CocosToH5PayloadMap extends Omit<SharedCocosToH5PayloadMap, 'ws
   wsSend: Uint8Array | ArrayBuffer;
 }
 ```
+
+CC 端只 import 类型，TS 编译后 import 整条被擦除，运行时不依赖该模块——所以 Cocos Creator 2.4 "不解析 node_modules" 这条限制不会触发。
 
 **硬性约束**：CC 端**不能** import bridge 的 runtime 值（`BRIDGE_ACTION.X` 常量、`createBridgeMessage` 等函数）。一旦碰了，那条 import 不会被擦除，Cocos 运行时会找不到 `@silenthill/h5-cc-bridge` 模块崩溃。CC 端发消息全部用字符串字面量（`'wsConnect'` 而不是 `BRIDGE_ACTION.WS_CONNECT`），保持类型纯依赖。
 

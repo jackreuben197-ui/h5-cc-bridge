@@ -24,7 +24,10 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "cc-side",
+    "h5-side",
+    "envelope"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",

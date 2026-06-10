@@ -1,0 +1,4 @@
+{
+  "main": "../dist/cc-side.js",
+  "types": "../dist/cc-side.d.ts"
+}
