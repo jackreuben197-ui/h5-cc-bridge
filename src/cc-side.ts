@@ -1,4 +1,4 @@
-// CC 端入口（h5-cc-bridge/cc-side）。
+// CC 端入口（@silenthill/h5-cc-bridge/cc-side）。
 //
 // 暴露给 Cocos Creator 项目使用的协议表面：
 //   - 所有 action 常量（CC→H5 发的 + H5→CC 收的）

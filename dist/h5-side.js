@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// H5 端入口（h5-cc-bridge/h5-side）。
+// H5 端入口（@silenthill/h5-cc-bridge/h5-side）。
 //
 // 在 cc-side 的全部类型/常量基础上，额外暴露 envelope 运行时函数
 // （createBridgeMessage / toBridgeRaw / parseBridgeRaw / parseBridgeObject 等）。

@@ -1,4 +1,4 @@
-# h5-cc-bridge
+# @silenthill/h5-cc-bridge
 
 H5 ↔ Cocos 桥接的**协议单一来源**。约束 h5-game (Vue/Vite) 与 h5-cc-game (Cocos Creator 2.4) 两端使用同一份 `BridgeAction` / payload 类型 / 信封序列化逻辑，避免双端字段漂移。
 
@@ -20,10 +20,10 @@ H5 ↔ Cocos 桥接的**协议单一来源**。约束 h5-game (Vue/Vite) 与 h5-
 
 | 入口 | 适用方 | 包含 |
 |------|--------|------|
-| `h5-cc-bridge/cc-side` | Cocos 项目 | 全部 action 常量 + CC→H5 / H5→CC payload 类型。**不含 envelope 运行时**（CC 历史上自实现 BridgeRawMessage） |
-| `h5-cc-bridge/h5-side` | H5 (Vue/Vite) | `cc-side` 全套 + `createBridgeMessage` / `parseBridgeRaw` / `toBridgeRaw` / `parseBridgeObject` 等 envelope 函数 |
-| `h5-cc-bridge/envelope` | 任意一方需单独引入 envelope | 仅 `createBridgeMessage` / `parseBridgeRaw` / ... |
-| `h5-cc-bridge`（默认） | 老调用点兼容 | 全部内容；新代码请改用 `/cc-side` 或 `/h5-side` |
+| `@silenthill/h5-cc-bridge/cc-side` | Cocos 项目 | 全部 action 常量 + CC→H5 / H5→CC payload 类型。**不含 envelope 运行时**（CC 历史上自实现 BridgeRawMessage） |
+| `@silenthill/h5-cc-bridge/h5-side` | H5 (Vue/Vite) | `cc-side` 全套 + `createBridgeMessage` / `parseBridgeRaw` / `toBridgeRaw` / `parseBridgeObject` 等 envelope 函数 |
+| `@silenthill/h5-cc-bridge/envelope` | 任意一方需单独引入 envelope | 仅 `createBridgeMessage` / `parseBridgeRaw` / ... |
+| `@silenthill/h5-cc-bridge`（默认） | 老调用点兼容 | 全部内容；新代码请改用 `/cc-side` 或 `/h5-side` |
 
 action 常量上也分了组：
 
@@ -38,7 +38,7 @@ action 常量上也分了组：
 ```json
 {
   "dependencies": {
-    "h5-cc-bridge": "git+https://github.com/soolary/h5-cc-bridge.git#main"
+    "@silenthill/h5-cc-bridge": "git+https://github.com/soolary/h5-cc-bridge.git#main"
   }
 }
 ```
@@ -49,7 +49,7 @@ action 常量上也分了组：
 // 伪代码
 resolve.alias['@bridge-protocol'] =
   env.VITE_BRIDGE_TARGET === 'h5-cc-game'
-    ? 'h5-cc-bridge/h5-side'                   // 用共享协议（H5 侧入口）
+    ? '@silenthill/h5-cc-bridge/h5-side'        // 用共享协议（H5 侧入口）
     : path.resolve(__dirname, 'src/bridge/protocol')  // 老 protocol（兼容 pokerqueen）
 ```
 
@@ -61,13 +61,13 @@ import { BRIDGE_ACTION, BRIDGE_MSG_TYPE, type BridgeMessage } from '@bridge-prot
 
 ### h5-cc-game（npm 依赖 + tsconfig paths）
 
-直接当 npm 包装，靠 `tsconfig.paths` 让 TSC 解析到 `node_modules/h5-cc-bridge/dist/cc-side.d.ts` 拿类型。CC 端只 import 类型，TS 编译后 import 被擦除，运行时不依赖该模块——所以 Cocos Creator 2.4 "不解析 node_modules" 这条限制不会触发。
+直接当 npm 包装，靠 `tsconfig.paths` 让 TSC 解析到 `node_modules/@silenthill/h5-cc-bridge/dist/cc-side.d.ts` 拿类型。CC 端只 import 类型，TS 编译后 import 被擦除，运行时不依赖该模块——所以 Cocos Creator 2.4 "不解析 node_modules" 这条限制不会触发。
 
 ```jsonc
 // h5-cc-game/package.json
 {
   "dependencies": {
-    "h5-cc-bridge": "git+ssh://git@github.com:soolary/h5-cc-bridge.git#main"
+    "@silenthill/h5-cc-bridge": "git+ssh://git@github.com:soolary/h5-cc-bridge.git#main"
   }
 }
 ```
@@ -78,8 +78,8 @@ import { BRIDGE_ACTION, BRIDGE_MSG_TYPE, type BridgeMessage } from '@bridge-prot
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "h5-cc-bridge": ["./node_modules/h5-cc-bridge/dist/index"],
-      "h5-cc-bridge/*": ["./node_modules/h5-cc-bridge/dist/*"]
+      "@silenthill/h5-cc-bridge": ["./node_modules/@silenthill/h5-cc-bridge/dist/index"],
+      "@silenthill/h5-cc-bridge/*": ["./node_modules/@silenthill/h5-cc-bridge/dist/*"]
     }
   }
 }
@@ -91,7 +91,7 @@ import type {
   CocosToH5PayloadMap as SharedCocosToH5PayloadMap,
   H5ToCocosPayloadMap,
   H5NavigatePayload,
-} from 'h5-cc-bridge/cc-side';
+} from '@silenthill/h5-cc-bridge/cc-side';
 
 // CC 侧 sendToH5 接受原始字节，本地覆盖一下 wsSend。
 export interface CocosToH5PayloadMap extends Omit<SharedCocosToH5PayloadMap, 'wsSend'> {
@@ -99,7 +99,7 @@ export interface CocosToH5PayloadMap extends Omit<SharedCocosToH5PayloadMap, 'ws
 }
 ```
 
-**硬性约束**：CC 端**不能** import bridge 的 runtime 值（`BRIDGE_ACTION.X` 常量、`createBridgeMessage` 等函数）。一旦碰了，那条 import 不会被擦除，Cocos 运行时会找不到 `h5-cc-bridge` 模块崩溃。CC 端发消息全部用字符串字面量（`'wsConnect'` 而不是 `BRIDGE_ACTION.WS_CONNECT`），保持类型纯依赖。
+**硬性约束**：CC 端**不能** import bridge 的 runtime 值（`BRIDGE_ACTION.X` 常量、`createBridgeMessage` 等函数）。一旦碰了，那条 import 不会被擦除，Cocos 运行时会找不到 `@silenthill/h5-cc-bridge` 模块崩溃。CC 端发消息全部用字符串字面量（`'wsConnect'` 而不是 `BRIDGE_ACTION.WS_CONNECT`），保持类型纯依赖。
 
 如果哪天 CC 端确实需要共用 envelope，再退回到"sync 源码 + UMD 注入"那一套即可，本仓库的 `cc-side` / `h5-side` 入口仍然可用。
 
