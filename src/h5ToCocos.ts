@@ -236,6 +236,14 @@ export interface SyncDiamondConfigPayload {
   raw?: Record<number, unknown>
 }
 
+// H5 -> Cocos：token 变更同步（登录 / 续期 / 登出）。
+// token 为空字符串表示登出；expireAt 缺省时 CC 不更新本地过期时间。
+export interface SyncTokenPayload {
+  token: string
+  // 秒级时间戳。
+  expireAt?: number
+}
+
 // Cocos 回执通用负载。
 export interface CocosAckPayload {
   ok: boolean
@@ -287,4 +295,5 @@ export interface H5ToCocosPayloadMap {
   syncLanguage: SyncLanguagePayload
   syncGlobalConfig: SyncGlobalConfigPayload
   syncDiamondConfig: SyncDiamondConfigPayload
+  syncToken: SyncTokenPayload
 }

@@ -51,6 +51,8 @@ exports.H5_TO_CC_ACTIONS = {
     SYNC_LANGUAGE: 'syncLanguage',
     SYNC_GLOBAL_CONFIG: 'syncGlobalConfig',
     SYNC_DIAMOND_CONFIG: 'syncDiamondConfig',
+    // token 变更同步：H5 登录/续期/登出后把最新 token 推给 CC，保证两端 token 一致。
+    SYNC_TOKEN: 'syncToken',
     // 进桌 / 进赛。
     ENTER_TABLE: 'enterTable',
     ENTER_MTT: 'enterMtt',

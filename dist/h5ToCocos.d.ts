@@ -177,6 +177,10 @@ export interface SyncGlobalConfigPayload {
 export interface SyncDiamondConfigPayload {
     raw?: Record<number, unknown>;
 }
+export interface SyncTokenPayload {
+    token: string;
+    expireAt?: number;
+}
 export interface CocosAckPayload {
     ok: boolean;
     message: string;
@@ -211,4 +215,5 @@ export interface H5ToCocosPayloadMap {
     syncLanguage: SyncLanguagePayload;
     syncGlobalConfig: SyncGlobalConfigPayload;
     syncDiamondConfig: SyncDiamondConfigPayload;
+    syncToken: SyncTokenPayload;
 }
