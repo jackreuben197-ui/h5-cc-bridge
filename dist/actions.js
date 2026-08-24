@@ -47,6 +47,7 @@ exports.H5_TO_CC_ACTIONS = {
     // 业务数据同步。
     SYNC_USER: 'syncUser',
     SYNC_USER_CLUB: 'syncUserClub',
+    SYNC_CURRENT_CLUB: 'syncCurrentClub',
     SYNC_ROOMS_LIST: 'syncRoomsList',
     SYNC_LANGUAGE: 'syncLanguage',
     SYNC_GLOBAL_CONFIG: 'syncGlobalConfig',

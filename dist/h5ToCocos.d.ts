@@ -164,6 +164,9 @@ export interface SyncUserClubResponse {
 export interface SyncUserClubPayload {
     response?: unknown;
 }
+export interface SyncCurrentClubPayload {
+    clubId: number;
+}
 export interface SyncRoomsListPayload {
     request: unknown;
     response: unknown;
@@ -211,6 +214,7 @@ export interface H5ToCocosPayloadMap {
     exitTable: unknown;
     syncUser: SyncUserPayload;
     syncUserClub: SyncUserClubPayload;
+    syncCurrentClub: SyncCurrentClubPayload;
     syncRoomsList: SyncRoomsListPayload;
     syncLanguage: SyncLanguagePayload;
     syncGlobalConfig: SyncGlobalConfigPayload;
