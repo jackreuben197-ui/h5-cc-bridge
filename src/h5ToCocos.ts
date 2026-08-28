@@ -217,7 +217,7 @@ export interface SyncUserClubPayload {
 
 // H5 -> Cocos：当前俱乐部同步（clubId 为内部 club_id，0 表示未选中俱乐部）。
 export interface SyncCurrentClubPayload {
-  clubId?: number
+  clubId: number
 }
 
 // H5 转发 rooms/list 请求与响应（通过 action=syncRoomsList 区分）。

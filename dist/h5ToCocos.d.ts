@@ -165,7 +165,7 @@ export interface SyncUserClubPayload {
     response?: unknown;
 }
 export interface SyncCurrentClubPayload {
-    clubId?: number;
+    clubId: number;
 }
 export interface SyncRoomsListPayload {
     request: unknown;
