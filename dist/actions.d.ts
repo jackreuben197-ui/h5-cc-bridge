@@ -28,6 +28,7 @@ export declare const H5_TO_CC_ACTIONS: {
     readonly DIALOG_RESULT: "dialogResult";
     readonly SYNC_USER: "syncUser";
     readonly SYNC_USER_CLUB: "syncUserClub";
+    readonly SYNC_CURRENT_CLUB: "syncCurrentClub";
     readonly SYNC_ROOMS_LIST: "syncRoomsList";
     readonly SYNC_LANGUAGE: "syncLanguage";
     readonly SYNC_GLOBAL_CONFIG: "syncGlobalConfig";
@@ -52,6 +53,7 @@ export declare const BRIDGE_ACTION: {
     readonly DIALOG_RESULT: "dialogResult";
     readonly SYNC_USER: "syncUser";
     readonly SYNC_USER_CLUB: "syncUserClub";
+    readonly SYNC_CURRENT_CLUB: "syncCurrentClub";
     readonly SYNC_ROOMS_LIST: "syncRoomsList";
     readonly SYNC_LANGUAGE: "syncLanguage";
     readonly SYNC_GLOBAL_CONFIG: "syncGlobalConfig";
