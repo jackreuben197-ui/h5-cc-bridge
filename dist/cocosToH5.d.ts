@@ -67,6 +67,10 @@ export type CcStorageOpPayload = CcIndexedDBOpPayload | CcLocalStorageOpPayload;
 export interface SetHeartbeatModePayload {
     mode: 'normal' | 'in-gameplay';
 }
+export declare const H5_LOGIN_CONTEXT: {
+    readonly TABLE_SITDOWN: "table-sitdown";
+};
+export type H5LoginContext = (typeof H5_LOGIN_CONTEXT)[keyof typeof H5_LOGIN_CONTEXT];
 export interface H5NavigatePayload {
     path?: string;
     name?: string;
@@ -76,6 +80,7 @@ export interface H5NavigatePayload {
     replace?: boolean;
     ensureVisible?: boolean;
     openLoginModal?: boolean;
+    loginContext?: H5LoginContext;
 }
 export interface CocosToH5PayloadMap {
     ccReady: undefined;

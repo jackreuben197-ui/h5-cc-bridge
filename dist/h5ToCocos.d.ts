@@ -114,10 +114,29 @@ export interface SyncUserInfo {
     club_id?: number;
 }
 export interface SyncUserPayload {
-    uid?: string;
-    nickname?: string;
+    uid: string;
+    randomId: string;
+    nickname: string;
     avatar?: string;
+    sex: number;
+    isExperience: boolean;
     raw?: unknown;
+}
+export declare const TABLE_SITDOWN_AUTH_STATE: {
+    readonly SWITCHING: "switching";
+    readonly CANCELLED: "cancelled";
+};
+export type TableSitdownAuthState = (typeof TABLE_SITDOWN_AUTH_STATE)[keyof typeof TABLE_SITDOWN_AUTH_STATE];
+export declare const TABLE_SITDOWN_AUTH_CANCEL_REASON: {
+    readonly LOGIN_CANCELLED: "login-cancelled";
+    readonly USER_NOT_IN_CHANNEL_CLUB: "real-user-not-in-channel-club";
+};
+export type TableSitdownAuthCancelReason = (typeof TABLE_SITDOWN_AUTH_CANCEL_REASON)[keyof typeof TABLE_SITDOWN_AUTH_CANCEL_REASON];
+export interface TableSitdownAuthPayload {
+    state: TableSitdownAuthState;
+    roomId?: string;
+    clubId?: number;
+    reason?: TableSitdownAuthCancelReason;
 }
 export interface ClubInfo {
     club_id: number;
@@ -219,5 +238,6 @@ export interface H5ToCocosPayloadMap {
     syncLanguage: SyncLanguagePayload;
     syncGlobalConfig: SyncGlobalConfigPayload;
     syncDiamondConfig: SyncDiamondConfigPayload;
+    tableSitdownAuth: TableSitdownAuthPayload;
     syncToken: SyncTokenPayload;
 }

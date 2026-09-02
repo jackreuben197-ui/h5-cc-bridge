@@ -156,10 +156,36 @@ export interface SyncUserInfo {
 // raw 是 H5 直接透传的 UserInfoData 等业务结构，类型较宽松；
 // Cocos 端按 (raw as { user?: SyncUserInfo }).user 断言后读取。
 export interface SyncUserPayload {
-  uid?: string
-  nickname?: string
+  uid: string
+  randomId: string
+  nickname: string
   avatar?: string
+  sex: number
+  isExperience: boolean
   raw?: unknown
+}
+
+export const TABLE_SITDOWN_AUTH_STATE = {
+  SWITCHING: 'switching',
+  CANCELLED: 'cancelled',
+} as const
+
+export type TableSitdownAuthState =
+  (typeof TABLE_SITDOWN_AUTH_STATE)[keyof typeof TABLE_SITDOWN_AUTH_STATE]
+
+export const TABLE_SITDOWN_AUTH_CANCEL_REASON = {
+  LOGIN_CANCELLED: 'login-cancelled',
+  USER_NOT_IN_CHANNEL_CLUB: 'real-user-not-in-channel-club',
+} as const
+
+export type TableSitdownAuthCancelReason =
+  (typeof TABLE_SITDOWN_AUTH_CANCEL_REASON)[keyof typeof TABLE_SITDOWN_AUTH_CANCEL_REASON]
+
+export interface TableSitdownAuthPayload {
+  state: TableSitdownAuthState
+  roomId?: string
+  clubId?: number
+  reason?: TableSitdownAuthCancelReason
 }
 
 // 俱乐部数据项 — 列出 Cocos ClubCache 通过 getter 读取的字段。
@@ -301,5 +327,6 @@ export interface H5ToCocosPayloadMap {
   syncLanguage: SyncLanguagePayload
   syncGlobalConfig: SyncGlobalConfigPayload
   syncDiamondConfig: SyncDiamondConfigPayload
+  tableSitdownAuth: TableSitdownAuthPayload
   syncToken: SyncTokenPayload
 }
