@@ -33,6 +33,7 @@ export declare const H5_TO_CC_ACTIONS: {
     readonly SYNC_LANGUAGE: "syncLanguage";
     readonly SYNC_GLOBAL_CONFIG: "syncGlobalConfig";
     readonly SYNC_DIAMOND_CONFIG: "syncDiamondConfig";
+    readonly SYNC_PRIVATE_UC_CHARGE_CONFIG: "syncPrivateUcChargeConfig";
     readonly TABLE_SITDOWN_AUTH: "tableSitdownAuth";
     readonly SYNC_TOKEN: "syncToken";
     readonly ENTER_TABLE: "enterTable";
@@ -59,6 +60,7 @@ export declare const BRIDGE_ACTION: {
     readonly SYNC_LANGUAGE: "syncLanguage";
     readonly SYNC_GLOBAL_CONFIG: "syncGlobalConfig";
     readonly SYNC_DIAMOND_CONFIG: "syncDiamondConfig";
+    readonly SYNC_PRIVATE_UC_CHARGE_CONFIG: "syncPrivateUcChargeConfig";
     readonly TABLE_SITDOWN_AUTH: "tableSitdownAuth";
     readonly SYNC_TOKEN: "syncToken";
     readonly ENTER_TABLE: "enterTable";

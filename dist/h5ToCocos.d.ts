@@ -199,6 +199,14 @@ export interface SyncGlobalConfigPayload {
 export interface SyncDiamondConfigPayload {
     raw?: Record<number, unknown>;
 }
+export type PrivateUcFeeType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export interface PrivateUcChargeConfigItem {
+    feeType: PrivateUcFeeType;
+    price: number;
+}
+export interface SyncPrivateUcChargeConfigPayload {
+    items: PrivateUcChargeConfigItem[];
+}
 export interface SyncTokenPayload {
     token: string;
     expireAt?: number;
@@ -238,6 +246,7 @@ export interface H5ToCocosPayloadMap {
     syncLanguage: SyncLanguagePayload;
     syncGlobalConfig: SyncGlobalConfigPayload;
     syncDiamondConfig: SyncDiamondConfigPayload;
+    syncPrivateUcChargeConfig: SyncPrivateUcChargeConfigPayload;
     tableSitdownAuth: TableSitdownAuthPayload;
     syncToken: SyncTokenPayload;
 }
