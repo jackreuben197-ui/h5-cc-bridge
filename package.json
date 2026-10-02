@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/soolary/h5-cc-bridge.git"
+    "url": "git+https://github.com/jackreuben197-ui/h5-cc-bridge.git"
   },
   "license": "MIT",
   "devDependencies": {
